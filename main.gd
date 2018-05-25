@@ -64,55 +64,60 @@ func match_tokens():
 		
 		current_slot = slot
 		
-		print(slot)
+#		print(slot)
 		
 		#check which row and column this token belongs to
-		var row = ceil((slot-1) / ACTIVE_BOARD.y)
-		var col = row * ACTIVE_BOARD.x - slot
+		var row = ceil((slot+1) / ACTIVE_BOARD.x)
 		
+		#hackish solution to get the first slot ´0´ to be recognized as being on the first row
+#		if row == 0:
+#			row = 1
+			
+		var col = row * ACTIVE_BOARD.x - slot
+		print("row is: " + str(row))
 		#if slot is with the ACTIVE_BOARD area
 		if 5 == 5:
 			if previous_slot != null:
-				#need to only record match if on the same row. need to add that check
+				#only match if current token is same type as previous token, and they are on the same row
 				if boardArray[current_slot] == boardArray[previous_slot] and row == previous_row:
 					print("Match! Type: " + str(boardArray[slot]))
 					#check if current row already added to array, else add
-#					if MATCH_ROW.has(row) and row != ACTIVE_BOARD.y:
-#						MATCH_ROW[row].push_back(current_slot)
-#					else:
-#						MATCH_ROW.push_back(row)
-#						MATCH_ROW[row].push_back(current_slot)
-#
-#				if current_slot == current_slot - ACTIVE_BOARD.x:
-#
-#					#check if current row already added to array, else add
-#					if MATCH_COL.has(col):	
-#						MATCH_COL[col].push_back(current_slot)
-#					else:
-#						MATCH_COL.push_back(col)
-#						MATCH_COL[col].push_back(current_slot)
+					#FIX: this only stores the matching token slot, not the slot of the token it matched
+					if MATCH_ROW.has(row) and row != ACTIVE_BOARD.y:
+						MATCH_ROW[row].push_back(current_slot)
+					else:
+						MATCH_ROW.push_back(current_slot)
+
+				if boardArray[current_slot] == boardArray[current_slot - ACTIVE_BOARD.x] and row != 1:
+
+					#check if current col already added to array, else add
+					if MATCH_COL.has(col) and col != ACTIVE_BOARD.x:	
+						MATCH_COL[col].push_back(current_slot)
+					else:
+						MATCH_COL.push_back(current_slot)
 					
 		previous_slot = slot
 		previous_row = row
 		
 	check_for_combo()
 	
-#	print(MATCH_COL)
+	print(MATCH_ROW)
+	print(MATCH_COL)
 		
 	#transfer the matching tokens into an easily traversable array	
-	for collection in MATCH_COL:
-		for item in collection:
-			if matchArray[item]:
-				pass
-			else:
-				matchArray.push_back(item)
-
-	for collection in MATCH_ROW:
-		for item in collection:
-			if matchArray[item]:
-				pass
-			else:
-				matchArray.push_back(item)
+#	for collection in MATCH_COL:
+#		for item in collection:
+#			if matchArray[item]:
+#				pass
+#			else:
+#				matchArray.push_back(item)
+#
+#	for collection in MATCH_ROW:
+#		for item in collection:
+#			if matchArray[item]:
+#				pass
+#			else:
+#				matchArray.push_back(item)
 
 func check_for_combo():
 	pass

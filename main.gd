@@ -74,13 +74,13 @@ func match_tokens():
 #			row = 1
 			
 		var col = row * ACTIVE_BOARD.x - slot
-		print("row is: " + str(row))
+#		print("row is: " + str(row))
 		#if slot is with the ACTIVE_BOARD area
 		if 5 == 5:
 			if previous_slot != null:
 				#only match if current token is same type as previous token, and they are on the same row
 				if boardArray[current_slot] == boardArray[previous_slot] and row == previous_row:
-					print("Match! Type: " + str(boardArray[slot]))
+#					print("Match! Type: " + str(boardArray[slot]))
 					#check if current row already added to array, else add
 					#FIX: this only stores the matching token slot, not the slot of the token it matched
 					if MATCH_ROW.has(row) and row != ACTIVE_BOARD.y:
@@ -104,37 +104,42 @@ func match_tokens():
 	print(MATCH_ROW)
 	print(MATCH_COL)
 		
-	#transfer the matching tokens into an easily traversable array	
+	#transfer the matching tokens into an easily traversable array, so we can destroy all matching tokens at once	
 #	for collection in MATCH_COL:
 #		for item in collection:
-#			if matchArray[item]:
-#				pass
-#			else:
-#				matchArray.push_back(item)
-#
+	for item in MATCH_COL:
+		matchArray.push_back(item)
+
 #	for collection in MATCH_ROW:
 #		for item in collection:
-#			if matchArray[item]:
-#				pass
-#			else:
-#				matchArray.push_back(item)
+	for item in MATCH_ROW:
+		if matchArray.has(item):
+			pass
+		else:
+			matchArray.push_back(item)
+				
+	matchArray.sort()
+	incinerate()
 
 func check_for_combo():
 	pass
 		
 func incinerate():
-	
+	for i in $tokens.get_children():
+		print(i.name)
+		print(i)
 	#add all matching tokens to a group for deletion, and delete
 	#reference in TOKEN_POOL
 	for slot in matchArray:
-		get_node("tokens/" + slot).add_to_group("destroy")
-		TOKEN_POOL[slot] = 0
-	
+		print(slot)
+		get_node("tokens/" + str(slot)).add_to_group("destroy")
+		boardArray[slot] = 0
+
 	#remove token from tree	
-	for token in SceneTree.get_nodes_in_group("destroy"):
+	for token in get_tree().get_nodes_in_group("destroy"):
 		token.set_name("incinerated")
 		token.queue_free()
-		
+
 	matchArray.clear()
-	
-	_init_game_board()
+
+#	_init_game_board()

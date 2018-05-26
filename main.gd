@@ -27,7 +27,6 @@ func _ready():
 
 	randomize()
 	boardOrigin = Vector2((SCREEN_SIZE.x /2) - TOKEN_SIZE * 2,100)
-	set_process_input(true)
 	_init_game_board()
 
 func _init_game_board():
@@ -83,10 +82,21 @@ func match_tokens():
 #					print("Match! Type: " + str(boardArray[slot]))
 					#check if current row already added to array, else add
 					#FIX: this only stores the matching token slot, not the slot of the token it matched
+
 					if MATCH_ROW.has(row) and row != ACTIVE_BOARD.y:
-						MATCH_ROW[row].push_back(current_slot)
+						pass
+#						MATCH_ROW[row].push_back(current_slot)
+#						print("running 1")
 					else:
 						MATCH_ROW.push_back(current_slot)
+						print("running 2")
+						
+						if !MATCH_ROW.has(previous_slot):
+							MATCH_ROW.push_back(previous_slot)
+				
+				# to only store matches 3 or larger, after each dud, if we find another match we store in an array within the array
+				# and then ignore any subarrays smaller than 3 in size for subsequent actions. So, we need an iterator for every
+				# new match we make. 
 
 				if boardArray[current_slot] == boardArray[current_slot - ACTIVE_BOARD.x] and row != 1:
 
@@ -95,6 +105,8 @@ func match_tokens():
 						MATCH_COL[col].push_back(current_slot)
 					else:
 						MATCH_COL.push_back(current_slot)
+						if !MATCH_ROW.has(current_slot - ACTIVE_BOARD.x):
+							MATCH_ROW.push_back(current_slot - ACTIVE_BOARD.x)
 					
 		previous_slot = slot
 		previous_row = row
@@ -119,7 +131,7 @@ func match_tokens():
 			matchArray.push_back(item)
 				
 	matchArray.sort()
-	incinerate()
+#	incinerate()
 
 func check_for_combo():
 	pass
@@ -143,3 +155,38 @@ func incinerate():
 	matchArray.clear()
 
 #	_init_game_board()
+
+func mark():
+	print("marking")
+
+	for slot in matchArray:
+		get_node("tokens/" + str(slot)).add_color_override("font_color", Color(1,0.2,1,1))
+
+func _on_Button_gui_input(ev):
+	if ev is InputEventMouseButton:
+		if ev.button_index == BUTTON_LEFT:
+			incinerate()
+
+
+func _on_Button2_gui_input(ev):
+	if ev is InputEventMouseButton:
+		if ev.button_index == BUTTON_LEFT:
+			mark()
+
+
+func _on_Button3_gui_input(ev):
+	if ev is InputEventMouseButton:
+		if ev.button_index == BUTTON_LEFT:
+			if ev.pressed:
+				
+				for token in $tokens.get_children():
+					print(token)
+					token.set_name("cleared")
+					token.hide()
+					token.queue_free()
+					
+				boardArray.clear()
+				matchArray.clear()
+				MATCH_COL.clear()
+				MATCH_ROW.clear()
+				_init_game_board()
